@@ -1,2 +1,2 @@
 # Black-jack-complete-python
-black jack python full code 
+Play Black Jack using Python!
