@@ -10,16 +10,6 @@ playing = True
 number_of_games = 1
 
 
-class Card:
-    
-    def __init__(self, suit = "", rank = 0):
-        self.suit = suit
-        self.rank = rank
-
-    def show_cards(self, suit, rank):
-        return f"{self.rank} of {self.suit}"
-    
-
 class Deck:
     
     def __init__(self):
@@ -45,7 +35,7 @@ class Hand:
         self.value = 0
         self.aces = 0
     
-    def add_card(self, cards):
+    def add_card(self):
         self.cards.append(new_deck.deal())
 
 
@@ -90,28 +80,36 @@ while playing == True:
     number_of_games += 1
     
     if net_money == 0 or net_money < 0:
-    	print("You have no money left!")
-    	print("Game over")
-    	print("Better luck next time!")
-    	break
-	
+        print("You have no money left!")
+        print("Game over")
+        print("Better luck next time!")
+        break
     
     player_playing = input("Do you want to play?(Yes/No): ")
     player_playing = check_input(player_playing)
     if player_playing == "No":
+        print(f"You have {net_money} cash left!")
         print("Okay, have a good day!")
+
         break
     
     print(f"\nYour net cash for round {number_of_games-1} is {net_money}")
     bet_in_range = False
-    while bet_in_range == False:
-        player_bet = int(input(f"Enter your bet(between 0 and {net_money}): "))
-        if player_bet > net_money or player_bet < 0:
-            print(f"You don't have enough to bet {player_bet}")
-            print("Try again!\n")
+    bet_is_int = False
+    while bet_in_range == False or bet_is_int == False:
+        player_bet = input(f"Enter your bet(between 0 and {net_money}): ")
+        if player_bet.isdigit() == True:
+            bet_is_int = True
+            if int(player_bet) > net_money or int(player_bet) < 0:
+                print(f"You don't have enough to bet {player_bet}")
+                print("Try again!\n")
+            else:
+                bet_in_range = True
+                break
         else:
-            bet_in_range = True
-            break
+            print("Invalid input, enter a number!")
+        
+    player_bet = int(player_bet)
     
     print("\nShuffling deck...")
     new_deck = Deck()
@@ -119,8 +117,8 @@ while playing == True:
     
     print("Dealing you two cards")
     new_hand_player = Hand()
-    new_hand_player.add_card([])
-    new_hand_player.add_card([])
+    new_hand_player.add_card()
+    new_hand_player.add_card()
     print("Your hand is currently: ")
     for i in range(2):
         print(new_hand_player.cards[i][1] + " of " + new_hand_player.cards[i][0])
@@ -128,8 +126,8 @@ while playing == True:
     print(f"Your sum of hand is {sum_of_hand_player}\n")
     
     new_hand_comp = Hand()
-    new_hand_comp.add_card([])
-    new_hand_comp.add_card([new_hand_comp.cards])
+    new_hand_comp.add_card()
+    new_hand_comp.add_card()
     print("Computer has a " + new_hand_comp.cards[0][1] + " of " + new_hand_comp.cards[0][0])
     print("Other card in hand will not be revealed\n")
     
@@ -159,6 +157,8 @@ while playing == True:
         print(f"Computer's sum of hand is {sum_of_hand_computer}")
         while True:
             if sum_of_hand_computer > sum_of_hand_player:
+                for i in range(len(new_hand_comp.cards)):
+                    print(new_hand_comp.cards[i][1] + " of " + new_hand_comp.cards[i][0])
                 print("Computer has higher sum than you do.\nSorry you lose your bet!")
                 net_money -= player_bet
                 break
@@ -176,3 +176,4 @@ while playing == True:
                     print("You have won this round!")
                     net_money += player_bet
                     break
+
